@@ -1,7 +1,7 @@
 #1.
 
 
-
+print(makkomat)
 
 
 
