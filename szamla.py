@@ -1,117 +1,62 @@
-adatok=[]
-def beolvasas():
-    #megnyitja
-    r=open("hivasok.txt","r",encoding="UTF-8")
-    e=r.readline()
- 
-    m=e
-
-    e=r.readline()
-
-    sor = e.strip()+ " " + m.strip()
-
-    #beolvas egy sort, azt eltárolja, majd beolvas még egyet, azokat egy sorrá teszi, majd beolvassa a listába az egy sort mint egy lista, magyarán lista listában
-    adatok.append(sor.split(" "))
-    while e:
-        e=r.readline()
-        m=e
-        e=r.readline()
-        sor = e.strip()+ " " + m.strip()
-
-        adatok.append(sor.split(" "))
-    del(adatok[-1])
-    #inté teszi őket
-    for i in range(len(adatok)):
-        for y in range(1,len(adatok[i])):
-            adatok[i][y]=int(adatok[i][y])
-
-    #telefonszám, kezdő óra, kezdő perc, kezdő másodperc
-beolvasas()
-#1.
-szam=input("Mondj egy telefonszámot: ")
-letezik=False
-if szam[0:2]=="39" or szam[0:2]=="41" or szam[0:2]=="71":
-    for i in range(len(adatok)):
-        if adatok[i][0]==szam:
-            letezik=True
-            break
-    if letezik:
-        print("Létező mobilszám!")
+#5.feladat
+file.seek(0)
+def mobile(szam):
+#Ha mobilszám akkor 1-et, ha nem 0-át ad vissza.
+    if szam[0:2]=="39" or szam[0:2]=="41" or szam[0:2]=="71":
+        return 1
     else:
-        print("Nem létező mobilszám!")
-else:
-    print("Nem mobilszám!")
+        return 0
 
+def idokulsor(sor):
+    from datetime import datetime
+    kezdi=elemek[0:3]
+    vegi=elemek[3:6]
+    kezdd=" ".join(kezdi)
+    vegg=" ".join(vegi)
+    ss="%H %M %S"
+    kul=datetime.strptime(vegg,ss)-datetime.strptime(kezdd,ss)
+    secs=kul.seconds
+    mins=int((secs+60)/60)
+    return mins
 
+mobilperc=0
+vezperc=0
+k=0
+a=file.readlines()
+while k<len(a):
+    if k%2==1:  #telefonszám
+        if mobile(a[k]):  #Ha mobil
+            mobilperc=mobilperc + idokulsor(a[(k-1)])
+        else:
+            vezperc=vezperc + idokulsor(a[(k-1)])
+    k=k+1
+print("A felhasználó vezetékkesel",vezperc, "percet, mobillal",mobilperc,"percet beszélt.")
 
-#2.
-hivas=[]
-hivas.append(int(input("Hívás eleje: óra: ")))
-hivas.append(int(input("Hívás eleje: perc: ")))
-hivas.append(int(input("Hívás eleje: másodperc: ")))
-hivas.append(int(input("Hívás vége: óra: ")))
-hivas.append(int(input("Hívás vége: perc: ")))
-hivas.append(int(input("Hívás vége: másodperc: ")))
+#6.feladat
+def csucse(sor):
+#1-et ad vissza, ha csúcsidőben van. 0-t ha nem.
+    elemek=sor.split()
+    kezdi=elemek[0]
+    vegi=elemek[3]
+    if int(kezdi)>=7 and int(kezdi)<18:
+        return 1
+    else:
+        return 0
 
-print(f"{((hivas[3]-hivas[0])*60)+(hivas[4]-hivas[1])} perc hosszúság volt a hívás.")
+file.seek(0)
+a=file.readlines()
+b=0
+mobperc=0
+vezperc=0
+while b<len(a):
+    if b%2==0:  #Időpontok          
+        if csucse(a[b]):
+            if mobile(a[(b+1)]):
+                mobperc=mobperc+ idokulsor(a[b])
+            else:
+                vezperc=vezperc+idokulsor(a[b])
+    b=b+1
 
-#3.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#4.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#5.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+fizetni=float(mobperc)*69,175 + float(vezperc)*30
+print("A felhasználónak a csúcsdíjas hívásokért összesen", fizetni, "Ft-ot kell fizetnie.")
+#vége
